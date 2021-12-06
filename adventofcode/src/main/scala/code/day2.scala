@@ -4,7 +4,6 @@ object day2 {
   def main(args: Array[String]): Unit = {
     val data = Source.fromFile("src/main/resources/day2.txt").mkString
     var dataList = data.split("\n").toList
-    // println(dataList)
 
     def parseInstruction(ins: String): (String, Int) = {
       (ins.split(" ")(0), ins.split(" ")(1).toInt)
@@ -33,7 +32,6 @@ object day2B {
   def main(args: Array[String]): Unit = {
     val data = Source.fromFile("src/main/resources/day2.txt").mkString
     var dataList = data.split("\n").toList
-    // println(dataList)
 
     def parseInstruction(ins: String): (String, Int) = {
       (ins.split(" ")(0), ins.split(" ")(1).toInt)

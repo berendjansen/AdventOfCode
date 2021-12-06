@@ -45,8 +45,8 @@ object day3B {
     }
 
     def getRating(l: List[String], f: (Int, Int) => Boolean): Int = {
-      @annotation.tailrec
       var pattern = ""
+      @annotation.tailrec
       def go(l: List[String], i: Int): String = l match {
         case List(_) if l.length == 1 => l.head
         case _ => {
