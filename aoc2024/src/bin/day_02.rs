@@ -65,27 +65,16 @@ fn check_level(level: &[u64]) -> bool {
 }
 
 fn check_level_with_dampener(level: &[u64]) -> bool {
-    if check_level(&level[1..]) {
-        return true;
-    } else if check_level(&level[..level.len() - 1]) {
+    if check_level(&level[1..]) || check_level(&level[..level.len() - 1]) {
         return true;
     }
 
-    if level
-        .iter()
-        .enumerate()
-        .map(|(i, _)| {
-            let mut level_clone = vec![0u64; level.len()];
-            level_clone.clone_from_slice(level);
-            level_clone.remove(i);
-            check_level(&level_clone) as u8
-        })
-        .sum::<u8>()
-        > 0
-    {
-        return true;
-    }
-    false
+    level.iter().enumerate().any(|(i, _)| {
+        let mut level_clone = vec![0u64; level.len()];
+        level_clone.clone_from_slice(level);
+        level_clone.remove(i);
+        check_level(&level_clone)
+    })
 }
 
 #[cfg(test)]
