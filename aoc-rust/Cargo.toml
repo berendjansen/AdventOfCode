@@ -8,3 +8,4 @@ members = ["lib"]
 
 [dependencies]
 aoc = { path = "lib" }
+regex = "1.11.1"
