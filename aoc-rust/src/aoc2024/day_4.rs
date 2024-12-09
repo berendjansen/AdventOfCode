@@ -1,6 +1,7 @@
+use aoc::matrix_from_input;
 use aoc::Solver;
 use fancy_regex::Regex;
-use ndarray::{Array2, Axis};
+use ndarray::Array2;
 
 #[derive(Debug)]
 enum Direction {
@@ -41,15 +42,6 @@ impl Dimension {
 pub struct Solution;
 
 impl Solution {
-    fn matrix_from_input(input: &[&str]) -> Array2<char> {
-        let vec2d = input
-            .iter()
-            .map(|l| l.chars().collect())
-            .collect::<Vec<Vec<char>>>();
-
-        matrix_from_nested_vec(vec2d)
-    }
-
     fn get_diagonal_in_dimension(
         mat: &Array2<char>,
         dimension: &Dimension,
@@ -198,19 +190,9 @@ impl Solution {
     }
 }
 
-fn matrix_from_nested_vec<T: Default + Copy>(v: Vec<Vec<T>>) -> Array2<T> {
-    let mut arr = Array2::<T>::default((v.len(), v[0].len()));
-    for (i, mut r) in arr.axis_iter_mut(Axis(0)).enumerate() {
-        for (j, c) in r.iter_mut().enumerate() {
-            *c = v[i][j];
-        }
-    }
-    arr
-}
-
 impl Solver for Solution {
     fn part1(&self, input: &[&str]) -> String {
-        let mat = Solution::matrix_from_input(input);
+        let mat = matrix_from_input(input);
 
         let diags = Solution::get_diagonals(&mat);
         let horizontals = Solution::get_flat_dimension(&mat, 1);
@@ -225,7 +207,7 @@ impl Solver for Solution {
     }
 
     fn part2(&self, input: &[&str]) -> String {
-        let mat = Solution::matrix_from_input(input);
+        let mat = matrix_from_input(input);
         let mut res = 0;
         for i in 0..mat.shape()[0] {
             for j in 0..mat.shape()[1] {

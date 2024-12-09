@@ -3,3 +3,6 @@ name = "aoc"
 version = "0.0.1"
 authors = [ "Berend Jansen" ]
 edition = "2021"
+
+[dependencies]
+ndarray = "0.16.1"
