@@ -50,8 +50,6 @@ impl Solution {
         current_position: (usize, usize),
         direction: Direction,
     ) -> (Option<(usize, usize)>, Direction) {
-        let (i, j) = current_position;
-
         let potential_next_position =
             Solution::next_position_in_direction(current_position, &direction);
 

@@ -1,5 +1,5 @@
-use std::fs::File;
 use ndarray::{Array2, Axis};
+use std::fs::File;
 use std::io::Read;
 
 pub fn get_file_contents(name: &str) -> std::io::Result<Vec<String>> {
@@ -9,6 +9,17 @@ pub fn get_file_contents(name: &str) -> std::io::Result<Vec<String>> {
     file.read_to_string(&mut buffer).unwrap();
 
     Ok(buffer.trim().split("\n").map(|x| String::from(x)).collect())
+}
+
+#[macro_export]
+macro_rules! set {
+    ( $( $x:expr ),* ) => {{
+        let mut temp_set = std::collections::HashSet::new();
+        $(
+            temp_set.insert($x);
+        )*
+        temp_set
+    }};
 }
 
 pub trait Solver {
