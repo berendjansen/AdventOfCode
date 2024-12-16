@@ -23,7 +23,7 @@ impl Solution {
             .collect::<HashSet<(usize, usize)>>()
     }
 
-    fn get_middle_element_of_vector<T>(v: &Vec<T>) -> Option<&T> {
+    fn get_middle_element_of_vector<T>(v: &[T]) -> Option<&T> {
         if v.len() % 2 != 1 {
             return None;
         }
@@ -31,7 +31,7 @@ impl Solution {
         v.get(v.len() / 2)
     }
 
-    fn is_correctly_ordered(v: &Vec<usize>, set_of_orderings: &HashSet<(usize, usize)>) -> bool {
+    fn is_correctly_ordered(v: &[usize], set_of_orderings: &HashSet<(usize, usize)>) -> bool {
         v.windows(2)
             .map(|w| !set_of_orderings.contains(&(w[1], w[0])))
             .all(|x| x)
@@ -70,7 +70,7 @@ impl Solver for Solution {
                 if Solution::is_correctly_ordered(v, &set_of_orderings) {
                     Solution::get_middle_element_of_vector(v).expect("Cannot get middle of vector.")
                 } else {
-                    &(0 as usize)
+                    &0_usize
                 }
             })
             .sum::<usize>();

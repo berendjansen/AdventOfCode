@@ -23,9 +23,8 @@ impl Solver for Solution {
     fn part1(&self, input: &[&str]) -> String {
         let res = input
             .iter()
-            .map(|l| Solution::extract_pattern(l, r"mul\(\d*,\d*\)"))
-            .flatten()
-            .map(|l| Solution::parse_mul(l))
+            .flat_map(|l| Solution::extract_pattern(l, r"mul\(\d*,\d*\)"))
+            .map(Solution::parse_mul)
             .sum::<i64>();
 
         format!("{}", res)
@@ -35,8 +34,7 @@ impl Solver for Solution {
         let mut is_do = true;
         let res = input
             .iter()
-            .map(|l| Solution::extract_pattern(l, r"(mul\(\d*,\d*\))|(don't)|(do)"))
-            .flatten()
+            .flat_map(|l| Solution::extract_pattern(l, r"(mul\(\d*,\d*\))|(don't)|(do)"))
             .map(|l| match l {
                 "do" => {
                     is_do = true;

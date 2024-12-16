@@ -8,7 +8,7 @@ pub fn get_file_contents(name: &str) -> std::io::Result<Vec<String>> {
 
     file.read_to_string(&mut buffer).unwrap();
 
-    Ok(buffer.trim().split("\n").map(|x| String::from(x)).collect())
+    Ok(buffer.trim().split("\n").map(String::from).collect())
 }
 
 #[macro_export]

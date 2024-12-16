@@ -36,7 +36,7 @@ impl Solution {
             .collect()
     }
 
-    fn fix_equation(res: i64, digits: &Vec<i64>, allowed_operators: Vec<Operation>) -> Option<i64> {
+    fn fix_equation(res: i64, digits: &[i64], allowed_operators: Vec<Operation>) -> Option<i64> {
         let sets_of_operations = (1..digits.len())
             .map(|_| allowed_operators.clone())
             .multi_cartesian_product();
@@ -44,6 +44,7 @@ impl Solution {
         for set_of_operations in sets_of_operations {
             let mut operations_iterator = set_of_operations.iter();
             let result: i64 = digits
+                .to_owned()
                 .clone()
                 .into_iter()
                 .reduce(|a, b| match operations_iterator.next() {
@@ -53,7 +54,7 @@ impl Solution {
                 .unwrap();
 
             if result == res {
-                return Some(result.clone());
+                return Some(result);
             }
         }
         None
@@ -66,10 +67,7 @@ impl Solver for Solution {
         let res = parsed_input
             .into_iter()
             .map(|(r, v)| {
-                match Solution::fix_equation(r, &v, vec![Operation::Plus, Operation::Mul]) {
-                    Some(x) => x,
-                    None => 0,
-                }
+                Solution::fix_equation(r, &v, vec![Operation::Plus, Operation::Mul]).unwrap_or(0)
             })
             .sum::<i64>();
         format!("{}", res)
@@ -79,14 +77,12 @@ impl Solver for Solution {
         let res = parsed_input
             .into_iter()
             .map(|(r, v)| {
-                match Solution::fix_equation(
+                Solution::fix_equation(
                     r,
                     &v,
                     vec![Operation::Plus, Operation::Mul, Operation::Concat],
-                ) {
-                    Some(x) => x,
-                    None => 0,
-                }
+                )
+                .unwrap_or(0)
             })
             .sum::<i64>();
         format!("{}", res)

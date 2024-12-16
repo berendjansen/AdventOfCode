@@ -95,21 +95,21 @@ impl Solution {
 
     fn get_diagonals(mat: &Array2<char>) -> Vec<String> {
         let mut output =
-            Solution::get_diagonal_in_dimension(&mat, &Dimension::Y, false, &Direction::Down);
+            Solution::get_diagonal_in_dimension(mat, &Dimension::Y, false, &Direction::Down);
         output.append(&mut Solution::get_diagonal_in_dimension(
-            &mat,
+            mat,
             &Dimension::X,
             true,
             &Direction::Down,
         ));
         output.append(&mut Solution::get_diagonal_in_dimension(
-            &mat,
+            mat,
             &Dimension::Y,
             true,
             &Direction::Up,
         ));
         output.append(&mut Solution::get_diagonal_in_dimension(
-            &mat,
+            mat,
             &Dimension::X,
             true,
             &Direction::Up,
@@ -130,7 +130,7 @@ impl Solution {
             .collect::<Vec<String>>()
     }
 
-    fn count_xmax_from_vector_of_strings(v: &Vec<String>) -> usize {
+    fn count_xmax_from_vector_of_strings(v: &[String]) -> usize {
         let re = Regex::new(r"(?=(XMAS))|(?=(SAMX))").expect("Cannot create regex.");
         v.iter()
             .map(|s| {
@@ -198,9 +198,9 @@ impl Solver for Solution {
         let horizontals = Solution::get_flat_dimension(&mat, 1);
         let verticals = Solution::get_flat_dimension(&mat, 0);
 
-        let res: usize = vec![diags, horizontals, verticals]
+        let res: usize = [diags, horizontals, verticals]
             .iter()
-            .map(|e| Solution::count_xmax_from_vector_of_strings(e))
+            .map(|x| Solution::count_xmax_from_vector_of_strings(x))
             .sum();
 
         format!("{}", res)

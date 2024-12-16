@@ -1,20 +1,35 @@
+use std::cmp::Reverse;
+use std::collections::BinaryHeap;
+
 use aoc::Solver;
 
 pub struct Solution;
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 enum BlockType {
     Free,
     File,
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 struct Block {
     block_type: BlockType,
-    space: usize,
-    start_pos: usize,
+    size: usize,
+    pos: usize,
+}
+
+impl Block {
+    fn new(block_type: BlockType, size: usize, pos: usize) -> Block {
+        Block {
+            block_type,
+            size,
+            pos,
+        }
+    }
 }
 
 impl Solution {
-    fn convert_disk_map_to_blocks(disk_map: &str) -> Vec<String> {
+    fn expand_disk_map(disk_map: &str) -> Vec<String> {
         let mut out = vec![];
         for (i, b) in disk_map.chars().enumerate() {
             let c = if i % 2 != 0 {
@@ -56,60 +71,85 @@ impl Solution {
                 if c == "." {
                     0
                 } else {
-                    i * str::parse::<usize>(&c).unwrap() as usize
+                    i * str::parse::<usize>(&c).unwrap()
                 }
             })
             .sum::<usize>()
     }
 
-    fn rearrange_blocks_per_file(mut disk_map: Vec<String>) -> Vec<String> {
-        let (mut _i, mut j) = (0, disk_map.len() - 1);
+    fn rearrange_blocks_per_file(
+        disk_map: Vec<Block>,
+        mut free_spaces: [BinaryHeap<Reverse<usize>>; 10],
+    ) -> usize {
+        let mut j = disk_map.len() - 1;
+        let mut out = 0;
+
         while j > 0 {
-            if disk_map[j] == "." {
-                j -= 1;
-            } else {
-                let end_of_file = j;
-                while j > 0 && disk_map[j] == disk_map[end_of_file] {
-                    j -= 1;
-                }
-                let file_size = end_of_file - j;
-
-                for i in 0..(j + 1) {
-                    let start_free_space = i;
-                    let mut k = i;
-                    while k <= j && disk_map[k] == "." {
-                        k += 1;
-                    }
-
-                    let space = k - start_free_space;
-
-                    if space >= file_size {
-                        for f in 0..file_size {
-                            disk_map.swap(start_free_space + f, end_of_file - f)
-                        }
-                        break;
+            let mut first_pos = usize::MAX;
+            let mut heap_popped = usize::MAX;
+            for (i, spaces) in free_spaces.iter().skip(disk_map[j].size).enumerate() {
+                if let Some(Reverse(free_block_position)) = spaces.peek() {
+                    if free_block_position < &first_pos {
+                        first_pos = *free_block_position;
+                        heap_popped = i + disk_map[j].size;
                     }
                 }
             }
+
+            // if we have found a space we move
+            let pos = if heap_popped < usize::MAX && first_pos < disk_map[j].pos {
+                let file_block = disk_map[j];
+                let space_size = heap_popped;
+
+                free_spaces[heap_popped].pop(); // remove the previous space
+                if file_block.size < space_size {
+                    free_spaces[space_size - file_block.size]
+                        .push(Reverse(first_pos + file_block.size));
+                }
+                first_pos
+            } else {
+                disk_map[j].pos
+            };
+
+            for k in pos..(pos + disk_map[j].size) {
+                out += k * j / 2;
+            }
+            j -= 2;
         }
-        disk_map
+        out
     }
 }
 
 impl Solver for Solution {
     fn part1(&self, input: &[&str]) -> String {
         let input = input[0];
-        let res = Solution::checksum(Solution::rearrange_blocks(
-            Solution::convert_disk_map_to_blocks(input),
-        ));
+        let res = Solution::checksum(Solution::rearrange_blocks(Solution::expand_disk_map(input)));
         format!("{}", res)
     }
 
     fn part2(&self, input: &[&str]) -> String {
-        let input = input[0];
-        let res = Solution::checksum(Solution::rearrange_blocks_per_file(
-            Solution::convert_disk_map_to_blocks(input),
-        ));
+        let input = input[0].trim();
+        let mut disk_map = vec![];
+        let mut pos = 0;
+        let mut free_spaces: [BinaryHeap<Reverse<usize>>; 10] = [const { BinaryHeap::new() }; 10];
+        for (i, b) in input.chars().enumerate() {
+            let block_type = if i % 2 != 0 {
+                BlockType::Free
+            } else {
+                BlockType::File
+            };
+
+            let block_size = b.to_digit(10).unwrap() as usize;
+
+            disk_map.push(Block::new(block_type, block_size, pos));
+
+            if let BlockType::Free = block_type {
+                free_spaces[block_size].push(Reverse(pos))
+            }
+            pos += block_size;
+        }
+
+        let res = Solution::rearrange_blocks_per_file(disk_map, free_spaces);
         format!("{}", res)
     }
 }
@@ -130,11 +170,12 @@ mod tests {
         }
         true
     }
+
     #[test]
     fn test_disk_map_conversion() {
         let disk_map = "12345";
         assert_eq!(
-            Solution::convert_disk_map_to_blocks(disk_map),
+            Solution::expand_disk_map(disk_map),
             "0..111....22222"
                 .chars()
                 .map(|x| x.to_string())
@@ -143,7 +184,7 @@ mod tests {
 
         let disk_map = "2333133121414131402";
         assert_eq!(
-            Solution::convert_disk_map_to_blocks(disk_map),
+            Solution::expand_disk_map(disk_map),
             "00...111...2...333.44.5555.6666.777.888899"
                 .chars()
                 .map(|x| x.to_string())
@@ -152,7 +193,7 @@ mod tests {
 
         let disk_map = "23331331214141314022503";
         assert_eq!(
-            Solution::convert_disk_map_to_blocks(disk_map),
+            Solution::expand_disk_map(disk_map),
             vec![
                 "0", "0", ".", ".", ".", "1", "1", "1", ".", ".", ".", "2", ".", ".", ".", "3",
                 "3", "3", ".", "4", "4", ".", "5", "5", "5", "5", ".", "6", "6", "6", "6", ".",
@@ -194,21 +235,6 @@ mod tests {
         assert!(validate_no_digits_after_period(Solution::rearrange_blocks(
             block
         ),))
-    }
-
-    #[test]
-    fn test_rearrange_block_per_file() {
-        let block = "00...111...2...333.44.5555.6666.777.888899"
-            .chars()
-            .map(|x| x.to_string())
-            .collect();
-        assert_eq!(
-            Solution::rearrange_blocks_per_file(block),
-            "00992111777.44.333....5555.6666.....8888.."
-                .chars()
-                .map(|x| x.to_string())
-                .collect::<Vec<String>>()
-        );
     }
 
     #[test]

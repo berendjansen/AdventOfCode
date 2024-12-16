@@ -14,9 +14,9 @@ impl Solution {
     fn check_level(level: &[u64]) -> bool {
         let mut increasing = false;
         let mut decreasing = false;
-        let mut level_it = level.into_iter();
+        let mut level_it = level.iter();
         let mut current_value = level_it.next().expect("empty level");
-        while let Some(next_value) = level_it.next() {
+        for next_value in level_it {
             match next_value.cmp(current_value) {
                 Ordering::Less => {
                     decreasing = true;
@@ -32,7 +32,7 @@ impl Solution {
             }
 
             let diff = next_value.abs_diff(*current_value);
-            if diff < 1 || diff > 3 {
+            if !(1..=3).contains(&diff) {
                 return false;
             }
 

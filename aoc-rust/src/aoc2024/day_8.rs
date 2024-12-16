@@ -31,7 +31,7 @@ impl Solution {
         let antinode_1 = ((pos_a.0 + diff_y), (pos_a.1 + diff_x));
         let antinode_2 = ((pos_b.0 - diff_y), (pos_b.1 - diff_x));
 
-        convert_tuples_to_isize_and_filter(&vec![antinode_1, antinode_2])
+        convert_tuples_to_isize_and_filter(&[antinode_1, antinode_2])
             .into_iter()
             .filter(|(i, j)| i < &height && j < &width)
             .collect()
@@ -50,7 +50,7 @@ impl Solution {
 
         let antinodes: Vec<(isize, isize)> = (0..height)
             .flat_map(|i| {
-                vec![
+                [
                     (
                         (pos_a.0 + i as isize * diff_y),
                         (pos_a.1 + i as isize * diff_x),

@@ -74,11 +74,11 @@ impl Solution {
         let mut visited_positions: HashSet<(usize, usize, Direction)> = HashSet::new();
         let mut direction = Direction::Up;
         let mut current_position =
-            Solution::find_start_position(&grid).expect("Cannot find starting position.");
+            Solution::find_start_position(grid).expect("Cannot find starting position.");
         visited_positions.insert((current_position.0, current_position.1, direction.clone()));
 
         while let (Some((i, j)), next_direction) =
-            Solution::make_step(&grid, current_position, direction)
+            Solution::make_step(grid, current_position, direction)
         {
             if !visited_positions.insert((i, j, next_direction.clone())) {
                 return None;

@@ -26,7 +26,7 @@ impl Solver for Solution {
 
         let output: u64 = left
             .into_iter()
-            .zip(right.into_iter())
+            .zip(right)
             .map(|(l, r)| l.abs_diff(r))
             .sum();
 
@@ -49,7 +49,7 @@ impl Solver for Solution {
                 if let Some(value) = right_counts.get(l) {
                     *value * l
                 } else {
-                    0 as u64
+                    0_u64
                 }
             })
             .sum();
