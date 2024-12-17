@@ -68,9 +68,7 @@ impl Solver for Solution {
                 }
             }
 
-            while !positions_to_visit.is_empty() {
-                // while let Some((p, steps)) = positions_to_visit.iter().next() {
-                let (p, steps) = positions_to_visit.iter().next().unwrap().clone();
+            while let Some((p, steps)) = positions_to_visit.iter().cloned().next() {
                 positions_to_visit.remove(&(p, steps));
 
                 trailhead_map
@@ -106,8 +104,7 @@ impl Solver for Solution {
                 }
             }
 
-            while !positions_to_visit.is_empty() {
-                let (p, steps) = positions_to_visit.iter().next().unwrap().clone();
+            while let Some((p, steps)) = positions_to_visit.iter().cloned().next() {
                 positions_to_visit.remove(&((p), steps.clone()));
 
                 let trailheads_in_this_position = trailhead_map.entry(p).or_insert(set![]);
